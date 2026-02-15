@@ -50,18 +50,16 @@ const App: React.FC = () => {
   const headerActionsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    console.log('[App] Initializing auth listener...');
+    
     // Timeout de sécurité pour ne pas bloquer l'UI indéfiniment
     const timer = setTimeout(() => {
-      setAuthLoading((currentInfo) => {
-        if (currentInfo) {
-          console.warn("Auth timeout reached - Forcing release of loading state");
-          return false;
-        }
-        return currentInfo;
-      });
+      console.warn('[App] Auth timeout reached - Forcing release of loading state');
+      setAuthLoading(false);
     }, 6000); // 6 secondes max
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log('[App] Auth state changed:', user ? `User ${user.uid}` : 'No user');
       clearTimeout(timer); // On annule le timeout si Firebase répond
       setFirebaseUser(user);
       if (user) {
@@ -112,9 +110,13 @@ const App: React.FC = () => {
         setCurrentUser(null);
       }
       setAuthLoading(false);
+      console.log('[App] Auth loading complete');
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
