@@ -72,8 +72,13 @@ const App: React.FC = () => {
               status: 'ACTIF',
               isPublic: true
             };
-            await createUserProfile(newUser);
-            setCurrentUser(newUser);
+            try {
+              await createUserProfile(newUser);
+              setCurrentUser(newUser);
+            } catch (createError) {
+              console.error("Erreur création profil, utilisation fallback locaux", createError);
+              setCurrentUser(newUser); // On utilise l'objet local même si la save Firestore échoue
+            }
           }
         } catch (error) {
           console.error("Erreur lors de la gestion du profil utilisateur:", error);
