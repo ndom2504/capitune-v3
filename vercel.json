@@ -25,5 +25,8 @@
       "destination": "https://www.capitune.com/:path*",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
