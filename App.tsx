@@ -50,7 +50,19 @@ const App: React.FC = () => {
   const headerActionsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    // Timeout de sécurité pour ne pas bloquer l'UI indéfiniment
+    const timer = setTimeout(() => {
+      setAuthLoading((currentInfo) => {
+        if (currentInfo) {
+          console.warn("Auth timeout reached - Forcing release of loading state");
+          return false;
+        }
+        return currentInfo;
+      });
+    }, 6000); // 6 secondes max
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      clearTimeout(timer); // On annule le timeout si Firebase répond
       setFirebaseUser(user);
       if (user) {
         try {
